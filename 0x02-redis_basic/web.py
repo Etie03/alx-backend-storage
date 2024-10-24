@@ -22,13 +22,10 @@ def data_cacher(method: Callable) -> Callable:
         redis_store.incr(f'count:{url}')
         result = redis_store.get(f'result:{url}')
         if result:
-            print(f"Cache hit for {url}. Count: {redis_store.get(f'count:{url}').decode('utf-8')}")
             return result.decode('utf-8')
-        print(f"Cache miss for {url}. Fetching data...")
         result = method(url)
         redis_store.set(f'count:{url}', 0)
         redis_store.setex(f'result:{url}', 10, result)
-        print(f"Data cached for {url}. Count reset to 0.")
         return result
     return invoker
 
